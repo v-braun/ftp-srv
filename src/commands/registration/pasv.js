@@ -15,7 +15,7 @@ module.exports = {
       const {port} = server.address();
       let pasvAddress = this.server.options.pasv_url;
       if (typeof pasvAddress === "function") {
-        return Promise.try(() => pasvAddress(this.ip))
+        return Promise.try(() => pasvAddress(this.ip, this))
           .then((address) => ({address, port}));
       }
       // Allow connecting from local
