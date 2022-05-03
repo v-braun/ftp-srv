@@ -36,12 +36,16 @@ module.exports = {
           log.error(`STOR: stream err: ${err}`);
           return destroyConnection(this.connector.socket, reject)(err);
         });
-        stream.once('finish', () => resolve());
+        stream.once('finish', () => {
+          log.trace(`stream finish ...`);
+          resolve()
+        });
       });
 
       const socketPromise = new Promise((resolve, reject) => {
         this.connector.socket.pipe(stream, {end: false});
         this.connector.socket.once('end', () => {
+          log.trace(`conn socket end`)
           if (stream.listenerCount('close')) stream.emit('close');
           else stream.end();
           resolve();
@@ -70,6 +74,7 @@ module.exports = {
       return this.reply(550, err.message);
     })
     .finally(() => {
+      log.trace(`STOR ended...`);
       this.connector.end();
       this.commandSocket.resume();
     });
