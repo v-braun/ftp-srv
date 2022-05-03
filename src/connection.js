@@ -9,6 +9,49 @@ const Commands = require('./commands');
 const errors = require('./errors');
 const DEFAULT_MESSAGE = require('./messages');
 
+
+class MessageBuffer {
+  constructor(delimiter) {
+    this.delimiter = delimiter
+    this.buffer = ""
+  }
+
+  isFinished() {
+    if (
+      this.buffer.length === 0 ||
+      this.buffer.indexOf(this.delimiter) === -1
+    ) {
+      return true
+    }
+    return false
+  }
+
+  push(data) {
+    this.buffer += data
+  }
+
+  getMessage() {
+    const delimiterIndex = this.buffer.indexOf(this.delimiter)
+    if (delimiterIndex !== -1) {
+      const message = this.buffer.slice(0, delimiterIndex)
+      this.buffer = this.buffer.slice(delimiterIndex + this.delimiter.length)
+      return message
+    }
+    return null
+  }
+
+  handleData() {
+    /**
+     * Try to accumulate the buffer with messages
+     *
+     * If the server isnt sending delimiters for some reason
+     * then nothing will ever come back for these requests
+     */
+    const message = this.getMessage()
+    return message
+  }
+}
+
 class FtpConnection extends EventEmitter {
   constructor(server, options) {
     super();
@@ -22,6 +65,9 @@ class FtpConnection extends EventEmitter {
     this.bufferSize = false;
     this._restByteCount = 0;
     this._secure = false;
+    
+    this.dataBuffer = new MessageBuffer('\r\n');
+
 
     this.connector = new BaseConnector(this);
 
@@ -42,11 +88,14 @@ class FtpConnection extends EventEmitter {
   }
 
   _handleData(data) {
-    const messages = _.compact(data.toString(this.encoding).split('\r\n'));
-    this.log.trace(messages);
-    this.log.trace({category: 'internal', rawMessage: data.toString(this.encoding)});
-    
-    return Promise.mapSeries(messages, (message) => this.commands.handle(message));
+    const rawMsg = data.toString(this.encoding);
+    this.dataBuffer.push(rawMsg);
+    while(!this.dataBuffer.isFinished()){
+      const part = this.dataBuffer.handleData()
+      const messages = _.compact(part.split('\r\n'));
+      this.log.trace(messages);
+      Promise.mapSeries(messages, (message) => this.commands.handle(message));      
+    }
   }
 
   get ip() {
