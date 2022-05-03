@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const Connector = require('./base');
 const errors = require('../errors');
 
-const CONNECT_TIMEOUT = 30 * 1000;
+const CONNECT_TIMEOUT = 3 * 60 * 1000;
 
 class Passive extends Connector {
   constructor(connection) {
