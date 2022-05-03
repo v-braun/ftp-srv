@@ -14,7 +14,7 @@ class Passive extends Connector {
     this.type = 'passive';
   }
 
-  waitForConnection({timeout = 5000, delay = 50} = {}) {
+  waitForConnection({timeout = 3 * 60 * 1000, delay = 50} = {}) {
     if (!this.dataServer) return Promise.reject(new errors.ConnectorError('Passive server not setup'));
 
     const checkSocket = () => {
