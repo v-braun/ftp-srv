@@ -13,7 +13,7 @@ class FtpServer extends EventEmitter {
   constructor(options = {}) {
     super();
     this.options = Object.assign({
-      log: buyan.createLogger({name: 'ftp-srv'}),
+      log: buyan.createLogger({name: 'ftp-srv', level: options?.logLevel}),
       url: 'ftp://127.0.0.1:21',
       pasv_min: 1024,
       pasv_max: 65535,
