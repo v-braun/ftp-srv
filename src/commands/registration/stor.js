@@ -32,7 +32,10 @@ module.exports = {
       };
 
       const streamPromise = new Promise((resolve, reject) => {
-        stream.once('error', destroyConnection(this.connector.socket, reject));
+        stream.once('error', (err) => {
+          log.error(`STOR: stream err: ${err}`);
+          return destroyConnection(this.connector.socket, reject)(err);
+        });
         stream.once('finish', () => resolve());
       });
 
@@ -43,7 +46,10 @@ module.exports = {
           else stream.end();
           resolve();
         });
-        this.connector.socket.once('error', destroyConnection(stream, reject));
+        this.connector.socket.once('error', (err) => {
+          log.error(`STOR: connector socket err: ${err}`);
+          return destroyConnection(stream, reject)(err);
+        });
       });
 
       this.restByteCount = 0;

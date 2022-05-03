@@ -32,9 +32,15 @@ module.exports = {
           }
         });
         stream.once('end', () => resolve());
-        stream.once('error', destroyConnection(this.connector.socket, reject));
+        stream.once('error', (err) => {
+          log.error(`RETR: stream err: ${err}`);
+          return destroyConnection(this.connector.socket, reject)(err);
+        });
 
-        this.connector.socket.once('error', destroyConnection(stream, reject));
+        this.connector.socket.once('error', (err) => {
+          log.error(`RETR: conenctor socket err: ${err}`);
+          return destroyConnection(stream, reject)(err);
+        });
       });
 
       this.restByteCount = 0;
