@@ -110,11 +110,13 @@ class FileSystem {
 
   delete(path) {
     const {fsPath} = this._resolvePath(path);
+    
     return fsAsync.stat(fsPath)
     .then((stat) => {
       if (stat.isDirectory()) return fsAsync.rmdir(fsPath);
       else return fsAsync.unlink(fsPath);
-    });
+    })
+    .catch(() => null);
   }
 
   mkdir(path) {
