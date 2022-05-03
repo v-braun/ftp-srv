@@ -44,6 +44,8 @@ class FtpConnection extends EventEmitter {
   _handleData(data) {
     const messages = _.compact(data.toString(this.encoding).split('\r\n'));
     this.log.trace(messages);
+    this.log.trace({category: 'internal', rawMessage: data.toString(this.encoding)});
+    
     return Promise.mapSeries(messages, (message) => this.commands.handle(message));
   }
 
