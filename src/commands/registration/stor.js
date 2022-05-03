@@ -37,15 +37,16 @@ module.exports = {
           return destroyConnection(this.connector.socket, reject)(err);
         });
         stream.once('finish', () => {
-          log.trace(`stream finish ...`);
+          log.trace(`STOR: stream finish ...`);
           resolve()
         });
       });
 
       const socketPromise = new Promise((resolve, reject) => {
+        log.trace(`STOR: begin pipe to stream`);
         this.connector.socket.pipe(stream, {end: false});
         this.connector.socket.once('end', () => {
-          log.trace(`conn socket end`)
+          log.trace(`STOR: conn socket end`)
           if (stream.listenerCount('close')) stream.emit('close');
           else stream.end();
           resolve();
