@@ -52,7 +52,10 @@ class Passive extends Connector {
 
         this.dataSocket = socket;
         this.dataSocket.on('error', (err) => this.server && this.server.emit('client-error', {connection: this.connection, context: 'dataSocket', error: err}));
-        this.dataSocket.once('close', () => this.closeServer());
+        this.dataSocket.once('close', () => {
+          this.log.info('Passive dataSocket closed');
+          this.closeServer();
+        });
 
         if (!this.connection.secure) {
           this.dataSocket.connected = true;
@@ -79,7 +82,10 @@ class Passive extends Connector {
         this.dataServer.listen(port, this.server.url.hostname, (err) => {
           if (err) reject(err);
           else {
-            idleServerTimeout = setTimeout(() => this.closeServer(), CONNECT_TIMEOUT);
+            idleServerTimeout = setTimeout(() => {
+              this.log.info(`passive connection timeout will close`);
+              this.closeServer()}
+            , CONNECT_TIMEOUT);
 
             this.log.debug({port}, 'Passive connection listening');
             resolve(this.dataServer);

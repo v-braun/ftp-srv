@@ -28,6 +28,7 @@ class Connector {
 
   closeSocket() {
     if (this.dataSocket) {
+      this.log.trace(`will close dataSocket`);
       const socket = this.dataSocket;
       this.dataSocket.end(() => socket && socket.destroy());
       this.dataSocket = null;
@@ -36,6 +37,7 @@ class Connector {
 
   closeServer() {
     if (this.dataServer) {
+      this.log.trace(`will close dataServer`);
       this.dataServer.close();
       this.dataServer = null;
     }
