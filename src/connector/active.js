@@ -11,7 +11,7 @@ class Active extends Connector {
     this.type = 'active';
   }
 
-  waitForConnection({timeout = 5000, delay = 250} = {}) {
+  waitForConnection({timeout = 3 * 60 * 1000, delay = 250} = {}) {
     const checkSocket = () => {
       if (this.dataSocket && this.dataSocket.connected) {
         return Promise.resolve(this.dataSocket);
