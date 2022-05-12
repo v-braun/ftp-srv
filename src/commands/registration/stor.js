@@ -8,6 +8,7 @@ module.exports = {
 
     const append = command.directive === 'APPE';
     const fileName = command.arg;
+    fileName = fileName.replace('*', '_');
 
     return this.connector.waitForConnection()
     .tap(() => this.commandSocket.pause())
