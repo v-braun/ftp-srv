@@ -7,7 +7,7 @@ module.exports = {
     if (!this.fs.write) return this.reply(402, 'Not supported by file system');
 
     const append = command.directive === 'APPE';
-    const fileName = command.arg;
+    let fileName = command.arg;
     fileName = fileName.replace('*', '_');
 
     return this.connector.waitForConnection()
