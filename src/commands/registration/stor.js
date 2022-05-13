@@ -80,7 +80,6 @@ module.exports = {
       return this.reply(550, err.message);
     })
     .finally(() => {
-      log.trace(`STOR ended...`);
       this.connector.end();
       this.commandSocket.resume();
     });
