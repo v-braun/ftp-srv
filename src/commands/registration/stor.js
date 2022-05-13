@@ -65,7 +65,10 @@ module.exports = {
       .then(() => Promise.all([streamPromise, socketPromise]))
       .tap(() => this.emit('STOR', null, serverPath))
       .then(() => this.reply(226, clientPath))
-      .finally(() => stream.destroy && stream.destroy());
+      .finally(() => {
+        // if(stream.destroy) stream.destroy();
+        if(stream.close) stream.close();
+      });
     })
     .catch(Promise.TimeoutError, (err) => {
       log.error(err);

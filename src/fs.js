@@ -87,6 +87,7 @@ class FileSystem {
     const stream = createWriteStream(fsPath, {flags: !append ? 'w+' : 'a+', start});
     stream.once('error', () => fsAsync.unlink(fsPath));
     stream.once('close', () => stream.end());
+    
     return {
       stream,
       clientPath
